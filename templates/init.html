@@ -1,0 +1,23 @@
+{% extends "init_base.html"%}
+{% block form %}
+<p>
+    <div class="input-group mb-3" style="font-family: 'Pixel', 'Consolas', 'Calibri'; font-size: 20px; width: 35%">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="log">23</span>
+        </div>
+        {{ form.login(placeholder="login", class="form-control") }}<br>
+    </div>
+</p>
+<p>
+    <div class="input-group mb-3" class="input-group mb-3" style="font-family: 'Pixel', 'Consolas', 'Calibri'; font-size: 20px; width: 35%">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="pas">46</span>
+        </div>
+        {{ form.password(placeholder="password", class="form-control") }}<br>
+    </div>
+</p>
+<p>
+    {{ form.submit(style="font-family: 'Pixel', 'Calibri', 'Consolas'; font-size: 26px; width: 25%;", class="btn btn-dark") }}
+    <a class="btn btn-secondary" href={{form.link[0]}} style="font-family: 'Pixel', 'Calibri', 'Consolas'; font-size: 26px; width: 10%;">{{ form.link[1] }}</a>
+</p>
+{% endblock %}

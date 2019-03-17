@@ -1,0 +1,11 @@
+{% extends "navbar.html" %}
+{% block content %}
+<style>
+    body { background: url(../static/img/background.jpg); }
+</style>
+{% for item in notes %}
+    <div style="background: url(../static/img/note_title.svg); background-size: 25% ; width=25%;">
+        <span style="font-family: 'Pixel'">item.title</span>
+    </div>
+{% endfor %}
+{% endblock %}

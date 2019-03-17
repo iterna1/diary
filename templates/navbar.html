@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+    <title>My diary</title>
+    <style>
+        @font-face {
+            font-family: 'Pixel';
+            src: url('../static/fonts/Minecrafter.ttf')  format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="font-family: 'Pixel'">
+        <a class="navbar-brand" href="#">
+            <img src="../static/img/icon.png" width="30" height="30" alt="|_.|">  Diary
+        </a>
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/">My notes</a>
+            </li>
+            {% if user.administrator %}
+            <li class="nav-item active">
+                <a class="nav-link" href="/admin_panel">Online</a>
+            </li>
+            {% endif %}
+            <li class="nav-item active">
+                <a class="nav-link" href="/profile">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/init/login">Close</a>
+            </li>
+        </ul>
+    </nav>
+    {% block content %}{% endblock %}
+</body>
+</html>
