@@ -1,11 +1,40 @@
 {% extends "navbar.html" %}
 {% block content %}
 <style>
-    body { background: url(../static/img/background.jpg); }
+    body { background: url(../static/img/background.jpg); background-size: contain }
+    .image {
+            font-family : 'Pixel';
+            position	: relative;
+            width		: 100%;
+        }
+
+    .title {
+            position	: absolute;
+            top		    : 45%;
+            left		: 0%;
+            width		: 100%;
+            font-size   : 450%
+        }
+
+    .date {
+            position	: absolute;
+            top		    : 20%;
+            left		: 65%;
+            width		: 100%;
+            font-size   : 200%
+        }
 </style>
+
+<br>
 {% for item in notes %}
-    <div style="background: url(../static/img/note_title.svg); background-size: 25% ; width=25%;">
-        <span style="font-family: 'Pixel'">item.title</span>
+    <div class="image">
+        <img src="../static/img/note_title.svg" />
+        <center>
+            <span class="title">
+                <a href="/note/{{ item.id }}">{{ item.title }}</a>
+            </span>
+        </center>
+        <span class="date">{{ item.date }}</span>
     </div>
 {% endfor %}
 {% endblock %}
