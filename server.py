@@ -48,7 +48,14 @@ def index():
         return redirect('/init/login')
     user = User.query.filter_by(login=session['login']).first()
     notes = Note.query.filter_by(user_id=user.id).all()
-    return render_template('index.html', user=user, notes=notes)
+    ln = len(notes)
+    if ln == 0:
+        separation = 1
+    elif ln > 8:
+        separation = 3
+    else:
+        separation = 2
+    return render_template('index.html', user=user, notes=notes, len=ln, sep=separation)
 
 
 @app.route('/init/<mod>', methods=['POST', 'GET'])

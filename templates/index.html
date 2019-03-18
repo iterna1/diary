@@ -1,11 +1,11 @@
 {% extends "navbar.html" %}
 {% block content %}
 <style>
-    body { background: url(../static/img/background.jpg); background-size: contain }
+    body { background: url(../static/img/background.jpg) }
     .image {
             font-family : 'Pixel';
             position	: relative;
-            width		: 100%;
+            width		: {{ 100 // sep - 1}}%;
         }
 
     .title {
@@ -13,28 +13,37 @@
             top		    : 45%;
             left		: 0%;
             width		: 100%;
-            font-size   : 450%
+            font-size   : {{ 450 // sep }}%;
         }
 
     .date {
             position	: absolute;
             top		    : 20%;
             left		: 65%;
-            width		: 100%;
-            font-size   : 200%
+            font-size   : {{ 200 // sep }}%;
         }
+    a {
+        text-decoration: none;
+        color: #3016B0;
+    }
 </style>
 
-<br>
-{% for item in notes %}
-    <div class="image">
-        <img src="../static/img/note_title.svg" />
-        <center>
-            <span class="title">
-                <a href="/note/{{ item.id }}">{{ item.title }}</a>
-            </span>
-        </center>
-        <span class="date">{{ item.date }}</span>
+<br />
+{% for i in range(len) %}
+    {% if i % sep == 0 %}
+    <p>
+    {% endif %}
+    <div class="image" style="display: inline-block">
+        <a href="/note/{{ notes[i].id }}">
+            <img src="../static/img/note_title.svg" />
+            <center>
+                <span class="title">
+                    {{ notes[i].title }}
+                </span>
+            </center>
+            <span class="date">{{ notes[i].date }}</span>
+        </a>
     </div>
 {% endfor %}
+
 {% endblock %}
