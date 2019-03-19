@@ -1,7 +1,7 @@
 from flask import Flask, session, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
-from forms import RegistrationForm, LoginForm
-from tools import to_hash, password_exists
+from forms import RegistrationForm, LoginForm, NoteEditForm
+from tools import to_hash, password_exists, get_date
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = ''
@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(15), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), unique=False, nullable=False)
+    password_hash = db.Column(db.String(256), unique=False, nullable=False)
     administrator = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
@@ -23,8 +23,8 @@ class User(db.Model):
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), unique=False, nullable=False)
-    text = db.Column(db.String(1000), unique=False, nullable=False)
+    title = db.Column(db.String(20), unique=False, nullable=False)
+    text = db.Column(db.String(1350), unique=False, nullable=True)
     date = db.Column(db.String(20), unique=False, nullable=False)
     user_id = db.Column(db.Integer)
 
@@ -36,20 +36,28 @@ db.create_all()
 # user = User(login='root', password_hash=to_hash('toor'), administrator=1)
 # db.session.add(user)
 # db.session.commit()
-# note = Note(title='title', text='text', date='18.03.2019', user_id=2)
+# note = Note(title='6', text='', date='18.03.2021', user_id=1)
 # db.session.add(note)
 # db.session.commit()
+
+
+def logged():
+    if 'login' not in session:
+        eq = User.query.filter_by(id=session['user_id']).first()
+        if session['login'] != eq.login:
+            return False
+    return True
 
 
 @app.route('/')
 @app.route('/index')
 def index():
-    if 'login' not in session:
+    if not logged():
         return redirect('/init/login')
     user = User.query.filter_by(login=session['login']).first()
-    notes = Note.query.filter_by(user_id=user.id).all()
+    notes = Note.query.filter_by(user_id=user.id).all()[::-1]
     ln = len(notes)
-    if ln == 0:
+    if ln == 1:
         separation = 1
     elif ln > 8:
         separation = 3
@@ -96,6 +104,31 @@ def init(mod):
             return redirect('/init/login')
 
     return render_template('init.html', form=form)
+
+
+@app.route('/note/<id>', methods=['GET', 'POST'])
+def note(id):
+    if not logged():
+        return redirect('/init/login')
+    try:
+        user = User.query.filter_by(login=session['login']).first()
+        form = NoteEditForm()
+        note_content = Note.query.filter_by(id=int(id)).first()
+        if form.validate_on_submit():
+            note_content.text = form.text.data
+            note_content.title = form.title.data
+            print(request.form['data'])
+            note_content.date = request.form['data']
+            db.session.commit()
+            return redirect('/index')
+        # existing content in the note
+        form.text.data = note_content.text
+        form.title.data = note_content.title
+
+    except AttributeError:
+        return '''<title>404 Error</title>
+                       <h1>404 ERROR</h1>'''
+    return render_template('note.html', user=user, form=form, date=get_date()[0])
 
 
 if __name__ == '__main__':

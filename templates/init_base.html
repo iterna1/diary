@@ -12,33 +12,25 @@
     <style>
         @font-face {
             font-family: 'Pixel';
-            src: url('../static/fonts/Minecrafter.ttf')  format('truetype');
+            src: url('../static/fonts/Pixel.ttf')  format('truetype');
             font-weight: normal;
             font-style: normal;
         }
 
-       h1 {
-           font-family: 'Pixel', 'Calibri', 'Consolas';
-           font-size: 26px;
-           width: 50%;
-       }
-       label {
-           font-family: 'Pixel', 'Consolas', 'Calibri';
-       }
-       button {
-           font-family: 'Pixel', 'Calibri', 'Consolas';
-           font-size: 26px;
-           width: 50%;
-       }
-       span {
-           font-family: 'Pixel', 'Calibri', 'Consolas';
-       }
-       form {
-           position:fixed;
-           top: 32%;
-           left: 0%;
-           width: 100%;
-       }
+        body {
+            background-color: rgb(240, 240, 240)
+        }
+
+        h1 {
+           font-family: 'Pixel';
+           font-size: 2vw;
+           width: 50vw;
+        }
+        form {
+            position:fixed;
+            top: 32vh;
+            width: 100vw;
+        }
     </style>
 </head>
 <body>
@@ -50,12 +42,12 @@
         </form>
     </center>
     {% for error in form.login.errors %}
-        <div class="alert alert-warning" role="alert" style="font-family: 'Pixel', 'Consolas', 'Calibri'; position:fixed; top: 5%; left: 80%; font-size: 16px; width: 20%;">
+        <div class="alert alert-warning" role="alert" style="font-family: 'Pixel', 'Consolas', 'Calibri'; position:fixed; top: 5vh; left: 82vw; font-size: 1vw; width: 20vw;">
             Login is required
         </div>
     {% endfor %}
     {% for error in form.password.errors %}
-        <div class="alert alert-warning" role="alert" style="font-family: 'Pixel', 'Consolas', 'Calibri'; position: fixed; top: 15%; left: 80%; font-size: 16px; width: 20%;">
+        <div class="alert alert-warning" role="alert" style="font-family: 'Pixel', 'Consolas', 'Calibri'; position: fixed; top: 15vh; left: 82vw; font-size: 1vw; width: 20vw;">
             Password is required
         </div>
     {% endfor %}

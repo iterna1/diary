@@ -12,14 +12,14 @@
     <style>
         @font-face {
             font-family: 'Pixel';
-            src: url('../static/fonts/Minecrafter.ttf')  format('truetype');
+            src: url('../static/fonts/Pixel.ttf')  format('truetype');
             font-weight: normal;
             font-style: normal;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top" style="font-family: 'Pixel'">
+    <nav class="navbar navbar-expand navbar-dark bg-dark sticky-top" style="font-family: 'Pixel'; height: 8vh">
         <a class="navbar-brand" href="#">
             <img src="../static/img/icon.png" width="30" height="30" alt="">  Diary
         </a>
@@ -36,10 +36,11 @@
                 <a class="nav-link" href="/profile">| Profile |</a>
             </li>
         </ul>
-        <a class="nav-link disabled" href="/init/login">
-            <img src="../static/img/exit.png" width="30" height="30" alt="Exit" />
+        <a class="nav-link active" href="/init/login">
+            <span aria-hidden="true" style="color: red; font-size: 2vw">&times;</span>
         </a>
     </nav>
+    {% block navbar %}{% endblock %}
     {% block content %}{% endblock %}
 </body>
 </html>
