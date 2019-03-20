@@ -1,6 +1,6 @@
 from flask import Flask, session, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
-from forms import RegistrationForm, LoginForm, NoteEditForm
+from forms import RegistrationForm, LoginForm, NoteEditForm, NoteCreateForm, AddDelForm
 from tools import to_hash, password_exists, get_date
 
 app = Flask(__name__)
@@ -15,7 +15,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     login = db.Column(db.String(15), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), unique=False, nullable=False)
-    administrator = db.Column(db.Integer, nullable=False)
+    note_sequence_by_date = db.Column(db.Boolean, default=True, nullable=False)
+    administrator = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
         return '<User %i %s %s>' % (self.id, self.login, self.password_hash)
@@ -36,34 +37,53 @@ db.create_all()
 # user = User(login='root', password_hash=to_hash('toor'), administrator=1)
 # db.session.add(user)
 # db.session.commit()
-# note = Note(title='6', text='', date='18.03.2021', user_id=1)
-# db.session.add(note)
-# db.session.commit()
 
 
 def logged():
     if 'login' not in session:
+        return False
+    else:
         eq = User.query.filter_by(id=session['user_id']).first()
-        if session['login'] != eq.login:
+        if eq is None or session['login'] != eq.login:
             return False
     return True
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['POST', 'GET'])
+@app.route('/index', methods=['POST', 'GET'])
 def index():
-    if not logged():
-        return redirect('/init/login')
-    user = User.query.filter_by(login=session['login']).first()
-    notes = Note.query.filter_by(user_id=user.id).all()[::-1]
-    ln = len(notes)
-    if ln == 1:
-        separation = 1
-    elif ln > 8:
-        separation = 3
-    else:
-        separation = 2
-    return render_template('index.html', user=user, notes=notes, len=ln, sep=separation)
+        if not logged():
+            return redirect('/init/login')
+
+        user = User.query.filter_by(login=session['login']).first()
+        notes = Note.query.filter_by(user_id=user.id)
+
+        if user.note_sequence_by_date:
+            filt = Note.id
+        else:
+            filt = Note.title
+
+        form = AddDelForm()
+        if form.validate_on_submit():
+            if form.plus.data:
+                return redirect('/note/new')
+            elif form.sort.data:
+                if user.note_sequence_by_date:
+                    filt = Note.title
+                    user.note_sequence_by_date = False
+                else:
+                    filt = Note.id
+                    user.note_sequence_by_date = True  # like date bcs id is primary key
+        db.session.commit()
+
+        ln = notes.count()
+        if ln == 1:
+            separation = 1
+        elif ln > 8:
+            separation = 3
+        else:
+            separation = 2
+        return render_template('index.html', user=user, notes=notes.order_by(filt).all(), len=ln, sep=separation, form=form)
 
 
 @app.route('/init/<mod>', methods=['POST', 'GET'])
@@ -98,7 +118,7 @@ def init(mod):
             if exists:
                 return redirect('/init/register')
             # register user
-            user = User(login=login, password_hash=password_hash, administrator=0)
+            user = User(login=login, password_hash=password_hash, administrator=False)
             db.session.add(user)
             db.session.commit()
             return redirect('/init/login')
@@ -112,23 +132,53 @@ def note(id):
         return redirect('/init/login')
     try:
         user = User.query.filter_by(login=session['login']).first()
-        form = NoteEditForm()
-        note_content = Note.query.filter_by(id=int(id)).first()
-        if form.validate_on_submit():
-            note_content.text = form.text.data
-            note_content.title = form.title.data
-            print(request.form['data'])
-            note_content.date = request.form['data']
-            db.session.commit()
-            return redirect('/index')
-        # existing content in the note
-        form.text.data = note_content.text
-        form.title.data = note_content.title
+        if id == 'new':
+            form = NoteCreateForm()
+            note_content = Note(title='untitled', user_id=user.id, date=get_date())
+            if form.validate_on_submit():
+                note_content.text = form.text.data
+                note_content.title = form.title.data
+                db.session.add(note_content)
+                db.session.commit()
+                return redirect('index')
+            form.text.data = note_content.text
+            form.title.data = note_content.title
+            return render_template('note.html', user=user, form=form, date=note_content.date)
 
-    except AttributeError:
-        return '''<title>404 Error</title>
-                       <h1>404 ERROR</h1>'''
-    return render_template('note.html', user=user, form=form, date=get_date()[0])
+        else:
+            form = NoteEditForm()
+            note_content = Note.query.filter_by(id=int(id)).first()
+            if form.validate_on_submit():
+                note_content.text = form.text.data
+                note_content.title = form.title.data
+                db.session.commit()
+                return redirect('/index')
+            # existing content in the note
+            form.text.data = note_content.text
+            form.title.data = note_content.title
+
+    except AttributeError and ValueError:
+        return redirect('/not_found')
+
+    return render_template('note.html', user=user, form=form, date=note_content.date)
+
+
+@app.route('/delete/<id>')
+def delete(id):
+    if not logged():
+        return redirect('/init/login')
+    try:
+        note = Note.query.filter_by(id=id).first()
+        db.session.delete(note)
+        db.session.commit()
+    except Exception as e:
+        return redirect('/not_found')
+    return redirect('/')
+
+
+@app.route('/not_found')
+def not_found():
+    return '''<title>404 Error</title><h1>404 ERROR</h1>'''
 
 
 if __name__ == '__main__':

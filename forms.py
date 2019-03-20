@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, TextAreaField, SubmitField
+from wtforms import StringField, PasswordField, TextAreaField, DateField, SubmitField
 from wtforms.validators import DataRequired
 
 
@@ -17,6 +17,12 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Create my diary')
     title = 'Create your personal diary'
     link = ('/init/login', 'Open')
+
+
+class AddDelForm(FlaskForm):
+    plus = SubmitField('+')
+    sort = SubmitField('s')
+    trash = SubmitField()
 
 
 class NoteEditForm(FlaskForm):
