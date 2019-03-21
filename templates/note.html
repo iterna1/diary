@@ -14,14 +14,14 @@
 <form method="post" novalidate>
     {{ form.hidden_tag() }}
     <div style="font-family: 'Pixel';">
-        <div class="input-group mb-3" style="position: absolute; left: 10vw; top: 16vh; height: 4vh; width: 35vw; text-decoration: none;">
+        <div class="input-group mb-3" style="position: absolute; left: 10vw; top: 16vh; width: 35vw; text-decoration: none;">
             <div class="input-group-prepend">
                 <div class="input-group-text" style="background-color: rgb(50, 50, 50); color: rgb(228, 228, 228)">{{ date }}</div>
             </div>
             {{ form.title(class="form-control textarea-color", maxlength="20") }}
         </div>
         <div>
-            {{ form.submit(class="btn", style="background-color: rgb(50, 50, 50); color: rgb(228, 228, 228); position: absolute; left: 82vw; top: 16vh; height: 6vh; width: 8vw ") }}
+            {{ form.submit(class="btn", style="background-color: rgb(50, 50, 50); color: rgb(228, 228, 228); position: absolute; left: 82vw; top: 16vh ") }}
         </div>
 
         {{ form.text(class="textarea-color", maxlength="1350", style="resize: none; position: absolute; left: 10vw; top: 24vh; width: 80vw; height: 64vh") }}

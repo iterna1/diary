@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<center>
+    <div style="font-family: 'Pixel'">
+        <p><br>
+        <h1>Count of users: {{ total }}</h1>
+        {% for item in items %}
+        <p>
+        <div style="font-size: 3vw; margin: 100px">
+            <span>---------------</span><br>
+            <span>{{ item[0] }}</span><br>
+            <span>Note count:  {{ item[1] }}</span><br>
+            <span>---------------</span>
+        </div>
+        {% endfor %}
+    </div>
+</center>
+{% endblock %}

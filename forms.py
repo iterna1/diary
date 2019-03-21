@@ -20,9 +20,16 @@ class RegistrationForm(FlaskForm):
 
 
 class AddDelForm(FlaskForm):
-    plus = SubmitField('+')
-    sort = SubmitField('s')
-    trash = SubmitField()
+    plus = SubmitField()
+    sort = SubmitField()
+
+
+class ProfileEditForm(FlaskForm):
+    login = StringField('login')
+    old_password = PasswordField('old password')
+    new_password = PasswordField('new password')
+    submit = SubmitField()
+    delete_account = SubmitField('Delete my diary')
 
 
 class NoteEditForm(FlaskForm):

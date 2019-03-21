@@ -1,6 +1,6 @@
 from flask import Flask, session, request, render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
-from forms import RegistrationForm, LoginForm, NoteEditForm, NoteCreateForm, AddDelForm
+from forms import RegistrationForm, LoginForm, NoteEditForm, NoteCreateForm, AddDelForm, ProfileEditForm
 from tools import to_hash, password_exists, get_date
 
 app = Flask(__name__)
@@ -33,12 +33,6 @@ class Note(db.Model):
         return '<Note %i %s %s %s %i>' % (self.id, self.title, self.text, self.date, self.user_id)
 
 
-db.create_all()
-# user = User(login='root', password_hash=to_hash('toor'), administrator=1)
-# db.session.add(user)
-# db.session.commit()
-
-
 def logged():
     if 'login' not in session:
         return False
@@ -54,10 +48,9 @@ def logged():
 def index():
         if not logged():
             return redirect('/init/login')
-
         user = User.query.filter_by(login=session['login']).first()
-        notes = Note.query.filter_by(user_id=user.id)
 
+        notes = Note.query.filter_by(user_id=user.id)
         if user.note_sequence_by_date:
             filt = Note.id
         else:
@@ -130,8 +123,9 @@ def init(mod):
 def note(id):
     if not logged():
         return redirect('/init/login')
+    user = User.query.filter_by(login=session['login']).first()
+
     try:
-        user = User.query.filter_by(login=session['login']).first()
         if id == 'new':
             form = NoteCreateForm()
             note_content = Note(title='untitled', user_id=user.id, date=get_date())
@@ -158,7 +152,7 @@ def note(id):
             form.title.data = note_content.title
 
     except AttributeError and ValueError:
-        return redirect('/not_found')
+        return redirect('/error/not_found')
 
     return render_template('note.html', user=user, form=form, date=note_content.date)
 
@@ -167,6 +161,7 @@ def note(id):
 def delete(id):
     if not logged():
         return redirect('/init/login')
+
     try:
         note = Note.query.filter_by(id=id).first()
         db.session.delete(note)
@@ -176,9 +171,59 @@ def delete(id):
     return redirect('/')
 
 
-@app.route('/not_found')
-def not_found():
-    return '''<title>404 Error</title><h1>404 ERROR</h1>'''
+@app.route('/profile', methods=['POST', 'GET'])
+def profile():
+    if not logged():
+        return redirect('/init/login')
+    user = User.query.filter_by(login=session['login']).first()
+
+    form = ProfileEditForm()
+    if form.validate_on_submit():
+        if form.delete_account.data:
+            db.session.delete(user)
+            db.session.commit()
+            return redirect('/init/register')
+        elif form.submit.data:
+            users = {i.login for i in User.query.all()}
+            if form.login.data in users:
+                return redirect('/profile')
+            user.login = form.login.data
+            if form.old_password.data and form.new_password.data:
+                if password_exists(user.password_hash, form.old_password.data):
+                    user.password_hash = to_hash(form.new_password.data)
+            db.session.commit()
+            session['login'] = user.login
+
+    form.login.data = user.login
+    return render_template('profile.html', user=user, form=form)
+
+
+@app.route('/admin_panel')
+def admin_panel():
+    if not logged():
+        return redirect('/init/login')
+    user = User.query.filter_by(login=session['login']).first()
+
+    if not user.administrator:
+        return redirect('/error/not_found')
+    total = len(User.query.all())
+
+    all = User.query.all()
+    items = []
+    for usr in all:
+        login = usr.login
+        count = Note.query.filter_by(user_id=usr.id).count()
+        items.append((login, count))
+
+    return render_template('online.html', user=user, total=total, items=items)
+
+
+@app.route('/error/<type>')
+def error(type):
+    msg = 'Error'
+    if type == 'not_found':
+        msg = '404 ERROR<p><h3>PAGE NOT FOUND</h3>'
+    return '''<title>Error</title><h1>%s</h1>''' % msg
 
 
 if __name__ == '__main__':

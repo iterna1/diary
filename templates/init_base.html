@@ -35,7 +35,7 @@
 </head>
 <body>
     <center>
-        <form method="post" novalidate>
+        <form method="post" novalidate style="position: absolute; top: 25vh">
             <h1>{{form.title}}</h1><br>
             {{ form.hidden_tag() }}
             {% block form %}{% endblock %}

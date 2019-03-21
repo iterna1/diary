@@ -3,8 +3,8 @@ import datetime
 from flask import session
 
 
-def password_exists(hash, password):
-    if check_password_hash(hash, password):
+def password_exists(hsh, password):
+    if check_password_hash(hsh, password):
         return True
 
 

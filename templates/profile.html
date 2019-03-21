@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {background-color: rgb(240, 240, 240)}
+</style>
+<center>
+    <form method='post' novalidate style="font-family: 'Pixel'">
+        {{ form.hidden_tag() }}
+        <div style="position: absolute; left: 20vw; top: 25vh; width: 45vw">
+            <h3>Change you personal information</h3><br>
+
+            <p>
+                <div class="input-group mb-3" style="font-size: 200%; width: 45vw">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="log" style="color: rgb(240, 240, 240); background-color: rgb(10, 10, 10)">32</span>
+                    </div>
+                    {{ form.login(maxlength="32", placeholder="login", class="form-control") }}<br>
+                    {{ form.login.label(class="input-group-text", style="background-color: rgb(50, 50, 50); color: rgb(228, 228, 228)") }}
+                </div>
+            <p>
+
+            <div class="input-group mb-3" style="font-family: 'Pixel'; font-size: 200%; width: 45vw">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="oldpas" style="color: rgb(240, 240, 240); background-color: rgb(10, 10, 10)">96</span>
+                </div>
+                {{ form.old_password(maxlength="96", placeholder="old password", class="form-control") }}<br>
+                {{ form.old_password.label(class="input-group-text", style="background-color: rgb(50, 50, 50); color: rgb(228, 228, 228)") }}
+            </div>
+
+            <p>
+            <div class="input-group mb-3" style="font-family: 'Pixel'; font-size: 200%; width: 45vw">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="newpas" style="color: rgb(240, 240, 240); background-color: rgb(10, 10, 10)">96</span>
+                </div>
+                {{ form.new_password(maxlength="96", placeholder="new password", class="form-control") }}<br>
+                {{ form.new_password.label(class="input-group-text", style="background-color: rgb(50, 50, 50); color: rgb(228, 228, 228)") }}
+            </div>
+
+            <p>
+            {{ form.submit(value="Change", style="font-family: 'Pixel'; font-size: 2vw; width: 45vw", class="btn btn-dark") }}
+        </div>
+            {{ form.delete_account(class="btn btn-danger", style="font-family: 'Pixel'; position: absolute; width: 10; height: 39vh; right: 20vw; top: 38vh") }}
+    </form>
+</center>
+
+{% endblock %}
