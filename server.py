@@ -4,7 +4,7 @@ from forms import RegistrationForm, LoginForm, NoteEditForm, NoteCreateForm, Add
 from tools import to_hash, password_exists, get_date
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = ''
+app.config['SECRET_KEY'] = 'my_super_unbelievable_top_secret_ключ_|<070pыu HeJl39 Yraд47b. 47Beч4|-0'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///diary.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -41,6 +41,9 @@ def logged():
         if eq is None or session['login'] != eq.login:
             return False
     return True
+
+
+db.create_all()
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -134,7 +137,7 @@ def note(id):
                 note_content.title = form.title.data
                 db.session.add(note_content)
                 db.session.commit()
-                return redirect('index')
+                return redirect('/index')
             form.text.data = note_content.text
             form.title.data = note_content.title
             return render_template('note.html', user=user, form=form, date=note_content.date)
@@ -184,7 +187,13 @@ def profile():
             db.session.commit()
             return redirect('/init/register')
         elif form.submit.data:
-            users = {i.login for i in User.query.all()}
+            users = [i for i in User.query.all()]
+            for i in range(len(users)):
+                if users[i].id == user.id:
+                    del users[i]
+                    break
+            users = {i.login for i in users}
+
             if form.login.data in users:
                 return redirect('/profile')
             user.login = form.login.data
@@ -193,6 +202,7 @@ def profile():
                     user.password_hash = to_hash(form.new_password.data)
             db.session.commit()
             session['login'] = user.login
+            return redirect('/index')
 
     form.login.data = user.login
     return render_template('profile.html', user=user, form=form)
